@@ -1,7 +1,7 @@
 // 
 const section = document.querySelector('section');
 const playerLivesCount = document.querySelector('span');
-const playerLives = 6;
+let playerLives = 6;
 
 playerLivesCount.textContent = playerLives;
 
@@ -26,15 +26,14 @@ const getData = () => [
     { imgSrc: "./images/baker.jpg", name: "baker"},
 ];
 
-// Randomize
+// Randomize =========================================
 const randomize = () => {
     const cardData = getData();  
     cardData.sort(() => Math.random() - 0.5);
     return cardData;
 }
-randomize();
 
-// Card Generator
+// Card Generator =========================================
 const cardGenerator = () => {
     const cardData = randomize();
 
@@ -61,11 +60,65 @@ const cardGenerator = () => {
     });
 };
 
-// Check Cards
+// Check Cards =========================================
 const checkCards = (e) => {
     const clickedCard = e.target;
     clickedCard.classList.add('flipped');
-    console.log(clickedCard);
+    const flippedCards = document.querySelectorAll('.flipped');
+    const toggleCard = document.querySelectorAll('.toggleCard');
+
+
+    //logic
+    if(flippedCards.length === 2) {
+        
+        if(flippedCards[0].getAttribute("cardName") === flippedCards[1].getAttribute("cardName")) {
+
+            flippedCards.forEach(card => {
+                card.classList.remove('flipped');
+                card.style.pointerEvents = 'none';
+            })
+
+        } else {
+
+            flippedCards.forEach(card => {
+                card.classList.remove('flipped');
+                setTimeout(() => card.classList.remove('toggleCard'), 1500);
+            })
+
+            playerLives --;
+            playerLivesCount.textContent = playerLives;
+            if(playerLives === 0) {
+                restart("You Lose ... :( \nTryAgain ;)");
+            }
+        }
+    }
+
+    if(toggleCard.length === 16) {
+        restart('You Won! :D \n Want to play again?');
+    }
+}
+
+// Restart =========================================
+const restart = (text) => {
+    cardData = randomize();
+    const cards = document.querySelectorAll('.card');
+    const faces = document.querySelectorAll('.face');
+    section.style.pointerEvents = 'none';
+
+    cardData.forEach((item, index) => {
+        cards[index].classList.remove('toggleCard');
+        //randomize ans delay
+        setTimeout(() => {
+            section.style.pointerEvents = 'all';
+            cards[index].style.pointerEvents = 'all';
+            faces[index].src = item.imgSrc;
+            cards[index].setAttribute('cardName', item.name);
+        }, 1500)
+    })
+
+    playerLives = 6;
+    playerLivesCount.textContent = playerLives;
+    setTimeout(() => window.alert(text), 100)
 }
 
 
